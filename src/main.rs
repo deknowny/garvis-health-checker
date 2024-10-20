@@ -52,16 +52,19 @@ async fn main() {
                         client.request_login_code(&garvis_health_check::envconf::ACCOUNT_PHONE.clone())
                     ).await {
                         Ok(Ok(login_token)) => {
+
                             tracing::info!("Enter auth code");
                             let mut auth_code = String::new();
                             std::io::stdin().read_line(&mut auth_code).unwrap();
                             auth_code = auth_code.trim().to_string();
+
                             match client.sign_in(&login_token, &auth_code).await {
                                 Ok(_client_user) => {},
                                 Err(grammers_client::SignInError::PasswordRequired(ptoken)) => {
                                     tracing::info!("Enter 2FA password");
                                     let mut twofa_password = String::new();
                                     std::io::stdin().read_line(&mut twofa_password).unwrap();
+                                    twofa_password = twofa_password.trim().to_string();
 
                                     match client.check_password(ptoken, twofa_password).await {
                                         Ok(_client_user) => {},
