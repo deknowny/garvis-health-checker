@@ -55,6 +55,7 @@ async fn main() {
                             tracing::info!("Enter auth code");
                             let mut auth_code = String::new();
                             std::io::stdin().read_line(&mut auth_code).unwrap();
+                            auth_code = auth_code.trim().to_string();
                             match client.sign_in(&login_token, &auth_code).await {
                                 Ok(_client_user) => {},
                                 Err(grammers_client::SignInError::PasswordRequired(ptoken)) => {
