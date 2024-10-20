@@ -95,7 +95,10 @@ async fn main() {
                             continue;
                         }
                     }
+                } else {
+                    break client;
                 }
+                
             },
             bad => {
                 tracing::error!(bad = ?bad, "Cannot check bot session auth, try again in 10 seconds");
@@ -212,8 +215,8 @@ async fn main() {
 
         if should_restart {
             tracing::warn!("Garvis is down. Restart");
-            let restart_result = tokio::process::Command::new("zsh")
-                .args(&["-c", "restart_garvis"])
+            let restart_result = tokio::process::Command::new("bash")
+                .args(&["-c", &garvis_health_check::envconf::RESTART_COMMAND.clone()])
                 .output()
                 .await
             ;

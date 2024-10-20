@@ -16,3 +16,6 @@ pub const ALIVE_PATIENCE: Lazy<u64> =
 
 pub const RESTART_PATIENCE: Lazy<u64> =
     Lazy::new(|| std::env::var("RESTART_PATIENCE").expect("RESTART_PATIENCE must be set").parse().unwrap());
+
+pub const RESTART_COMMAND: Lazy<String> =
+    Lazy::new(|| std::env::var("RESTART_COMMAND").expect("RESTART_COMMAND must be set"));
