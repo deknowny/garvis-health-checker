@@ -13,7 +13,7 @@ async fn main() {
     better_panic::install();
     // console_subscriber::init();
     setup_tracer();
-    tracing::info!("Run userbot image");
+    tracing::info!("Run Garvis health checker");
 
     let client = loop {
         let session_path = "./health-checker.grammers";
