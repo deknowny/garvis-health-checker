@@ -151,7 +151,7 @@ async fn main() {
         ).await {
             Ok(Ok(x)) => x,
             bad => {
-                tracing::error!(bad = ?bad, "Cannot send pong");
+                tracing::error!(bad = ?bad, "Cannot send /menu");
                 tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                 continue;
             }
