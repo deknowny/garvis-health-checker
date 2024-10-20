@@ -1,0 +1,17 @@
+[package]
+name = "garvis-health-check"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+grammers-client = { git = "https://github.com/deknowny/grammers", version = "0.6.0", features = ["html", "markdown", "proxy"] }
+grammers-session = { git = "https://github.com/deknowny/grammers", version = "0.5.2" }
+grammers-tl-types = { git = "https://github.com/deknowny/grammers", version = "0.6.0" }
+grammers-mtproto = { git = "https://github.com/deknowny/grammers", version = "0.6.0" }
+grammers-mtsender = { git = "https://github.com/deknowny/grammers", version = "0.5.1" }
+
+tokio = { version = "1.39.3", features = ["macros", "rt", "process"] }
+better-panic = "0.3.0"
+tracing = { version = "0.1.37", features = [] }
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+once_cell = "1.19.0"
