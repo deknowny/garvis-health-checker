@@ -13,3 +13,6 @@ pub const HEALTH_CHECK_PERIOD: Lazy<u64> =
 
 pub const ALIVE_PATIENCE: Lazy<u64> =
     Lazy::new(|| std::env::var("ALIVE_PATIENCE").expect("ALIVE_PATIENCE must be set").parse().unwrap());
+
+pub const RESTART_PATIENCE: Lazy<u64> =
+    Lazy::new(|| std::env::var("RESTART_PATIENCE").expect("RESTART_PATIENCE must be set").parse().unwrap());

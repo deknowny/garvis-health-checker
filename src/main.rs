@@ -3,13 +3,13 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 
 
-const RECONNECtiON_POLICY: &grammers_mtsender::FixedReconnect = &grammers_mtsender::FixedReconnect {
+const RECONNECTION_POLICY: &grammers_mtsender::FixedReconnect = &grammers_mtsender::FixedReconnect {
     attempts: 30000,
     delay: std::time::Duration::from_secs(3)
 };
 
 #[tokio::main(flavor = "current_thread")]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() {
     better_panic::install();
     // console_subscriber::init();
     setup_tracer();
@@ -20,13 +20,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let client = match tokio::time::timeout(
             std::time::Duration::from_secs(30),
             grammers_client::Client::connect(grammers_client::Config {
-                session: grammers_session::Session::load_file_or_create(&session_path)?,
+                session: grammers_session::Session::load_file_or_create(&session_path).unwrap(),
                 api_id: garvis_health_check::envconf::TG_API_ID.clone(),
                 api_hash: garvis_health_check::envconf::TG_API_HASH.clone(),
                 params: grammers_client::InitParams {
                     catch_up: false,
                     update_queue_limit: Some(100),
-                    reconnection_policy: RECONNECtiON_POLICY,
+                    reconnection_policy: RECONNECTION_POLICY,
                     ..Default::default()
                 },
             }
@@ -85,7 +85,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             }
                             break client;
                         },
-                        bad => {
+                        _bad => {
                             tracing::error!("Cannot bot sign in, try again in 10 seconds");
                             tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                             continue;
@@ -216,7 +216,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             match restart_result {
                 Ok(restart_output) => {
                     if restart_output.status.success() {
-                        tracing::info!("Garvis restarted")
+                        tracing::info!(wait_seconds = ?garvis_health_check::envconf::RESTART_PATIENCE.clone(), "Garvis restarted. Wait before next check");
                     } else {
                         let stderr = String::from_utf8_lossy(&restart_output.stderr).to_string();
                         tracing::error!(code = ?restart_output.status, stderr = stderr, "Error due restart command invocation");
@@ -230,26 +230,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         
-        
+    
 
         tracing::info!(next_check_after = garvis_health_check::envconf::HEALTH_CHECK_PERIOD.clone(), "Garvis works");
         tokio::time::sleep(std::time::Duration::from_secs(garvis_health_check::envconf::HEALTH_CHECK_PERIOD.clone()))
             .await;
 
     }
-
-    Ok(())
 }
 
 
 
 fn setup_tracer() {
-    #[cfg(debug_assertions)]
-    let userbot_level = "debug";
-
-    #[cfg(not(debug_assertions))]
-    let userbot_level = "info";
-
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::from_default_env())
         .with(tracing_subscriber::fmt::layer())
