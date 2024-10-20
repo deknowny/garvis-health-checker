@@ -178,7 +178,7 @@ async fn main() {
                 }
             },
             bad => {
-                tracing::error!(bad = ?bad, "Cannot retrive pong");
+                tracing::error!(bad = ?bad, "Cannot retrieve pong");
                 tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                 continue;
             }
@@ -193,13 +193,13 @@ async fn main() {
                 match x.get(0) {
                     Some(Some(_)) => {},
                     bad => {
-                        tracing::error!(bad = ?bad, "Garvis does not send menu");
+                        tracing::warn!(bad = ?bad, "Garvis does not send menu");
                         should_restart = true;
                     }
                 }
             },
             bad => {
-                tracing::error!(bad = ?bad, "Cannot respose menu message");
+                tracing::error!(bad = ?bad, "Cannot retrieve menu message");
                 tokio::time::sleep(std::time::Duration::from_secs(10)).await;
                 continue;
             }
@@ -224,6 +224,9 @@ async fn main() {
                 Ok(restart_output) => {
                     if restart_output.status.success() {
                         tracing::info!(wait_seconds = ?garvis_health_check::envconf::RESTART_PATIENCE.clone(), "Garvis restarted. Wait before next check");
+                        tokio::time::sleep(std::time::Duration::from_secs(garvis_health_check::envconf::RESTART_PATIENCE.clone()))
+                            .await;
+                        continue;
                     } else {
                         let stderr = String::from_utf8_lossy(&restart_output.stderr).to_string();
                         tracing::error!(code = ?restart_output.status, stderr = stderr, "Error due restart command invocation");
